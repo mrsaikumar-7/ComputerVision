@@ -1,4 +1,4 @@
-from cvzone.HandTrackingModule import HandDetector
+from HandTrackingModule import HandDetector
 import cv2
 import os
 import numpy as np
@@ -10,10 +10,23 @@ def quit(lmList, lmList2):
     safe = 60
     dist, info = detectorHand.findDistance(lmList[5][0:2], lmList2[9][0:2])
     print("DISTANCE IS : ", dist)
-
     if dist < safe:
         return True
     return False
+def straightLine():
+    global annotationStart
+    global annotationNumber
+    global indexFinger
+    if (fingers==[1,1,1,1,1] or fingers2== [1,1,1,1,1]) and (fingers == [0,1,0,0,0] and fingers == [0,1,0,0,0]):
+        if annotationStart is False:
+            annotationStart = True
+            annotationNumber += 1
+            annotations.append([])
+        # indexFinger = (indexFinger[0],600)
+        if len(annotations[annotationNumber])>1:
+            indexFinger = (annotations[annotationNumber][0][0],indexFinger[1])
+        annotations[annotationNumber].append(indexFinger)
+        cv2.circle(imgCurrent, indexFinger, 12, (0, 0, 255), cv2.FILLED)
 
 
 # Parameters
@@ -26,9 +39,10 @@ folderPath = "Presentation"
 cap = cv2.VideoCapture(0)
 cap.set(3, width)
 cap.set(4, height)
+cv2.setUseOptimized(True)  # Enable OpenCV optimizations
 
 # Hand Detector
-detectorHand = HandDetector(detectionCon=0.8, maxHands=2)
+detectorHand = HandDetector(detectionCon=0.7, maxHands=2)
 
 # Variables
 imgList = []
@@ -46,7 +60,7 @@ hs, ws = int(120 * 1), int(213 * 1)  # width and height of small image
 # Zooming feature
 initialDistance = 0
 image_scale = 0
-# Get list of presentation images
+# Get list of presentation1 images
 pathImages = sorted(os.listdir(folderPath), key=len)
 print(pathImages)
 
@@ -96,6 +110,8 @@ while True:
             # if quit(lmList, lmList2):
             #     print('GESTURED QUIT is activated')
             #     break
+            #Horizontal Line
+            straightLine()
         else:
             initialDistance = None
         try:
@@ -142,6 +158,7 @@ while True:
                 annotationStart = True
                 annotationNumber += 1
                 annotations.append([])
+            # indexFinger = (indexFinger[0],600)
             annotations[annotationNumber].append(indexFinger)
             cv2.circle(imgCurrent, indexFinger, 12, (0, 0, 255), cv2.FILLED)
 
@@ -159,7 +176,6 @@ while True:
         if counter > delay:
             counter = 0
             buttonPressed = False
-
     for i, annotation in enumerate(annotations):
         for j in range(len(annotation)):
             if j != 0:
