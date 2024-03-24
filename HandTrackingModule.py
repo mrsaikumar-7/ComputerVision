@@ -31,14 +31,15 @@ class HandDetector:
         self.modelComplexity = modelComplexity
         self.detectionCon = detectionCon
         self.minTrackCon = minTrackCon
+        
         self.mpHands = mp.solutions.hands
         self.hands = self.mpHands.Hands(static_image_mode=self.staticMode,
                                         max_num_hands=self.maxHands,
                                         model_complexity=modelComplexity,
                                         min_detection_confidence=self.detectionCon,
                                         min_tracking_confidence=self.minTrackCon)
-
         self.mpDraw = mp.solutions.drawing_utils
+        
         self.tipIds = [4, 8, 12, 16, 20]
         self.fingers = []
         self.lmList = []
@@ -141,11 +142,12 @@ class HandDetector:
                  Image with output drawn
                  Line information
         """
-
+        
         x1, y1 = p1
         x2, y2 = p2
-        cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
         length = math.hypot(x2 - x1, y2 - y1)
+        
+        cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
         info = (x1, y1, x2, y2, cx, cy)
         if img is not None:
             cv2.circle(img, (x1, y1), scale, color, cv2.FILLED)
@@ -190,7 +192,7 @@ def main():
 
             # Calculate distance between specific landmarks on the first hand and draw it on the image
             length, info, img = detector.findDistance(lmList1[8][0:2], lmList1[12][0:2], img, color=(255, 0, 255),
-                                                      scale=10)
+                                                        scale=10)
 
             # Check if a second hand is detected
             if len(hands) == 2:
@@ -207,7 +209,7 @@ def main():
 
                 # Calculate distance between the index fingers of both hands and draw it on the image
                 length, info, img = detector.findDistance(lmList1[8][0:2], lmList2[8][0:2], img, color=(255, 0, 0),
-                                                          scale=10)
+                                                            scale=10)
 
             print(" ")  # New line for better readability of the printed output
 
